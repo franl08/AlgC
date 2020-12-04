@@ -96,7 +96,7 @@ int insertHeap (Heap *h, Elem x){
 // Função BubbleDown 
 void bubbleDown (int h[], int N) {
   int i = 0, menor, flag = 1;
-  while (2 * i + 2 < N && flag) {
+  while (2 * i + 2 < N && flag) { // Caso em que há 2 filhos por onde decidir se se troca ou não
       menor = (h[2 * i+1] < h[2 * i+2]) ? 2 * i + 1 : 2 * i + 2;
       if (h[i] > h[menor]) {
           swap(h,i,menor);
@@ -105,7 +105,7 @@ void bubbleDown (int h[], int N) {
       else 
           flag = 0;
   } 
-  if (2 * i + 1 < N && h[2 * i + 1] < h[i]) 
+  if (2 * i + 1 < N && h[2 * i + 1] < h[i]) // caso em que só há um filho por onde decidir 
       swap(h, i, 2* i + 1);
 }
 
