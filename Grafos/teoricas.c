@@ -150,6 +150,6 @@ int haCaminho (GrafoL g, int o, int d)
     for (i = 0; i < V; i++) vis[i] = 0;
     return (haCaminhoAux(g,o,d,vis));
 }
-/* A Complexidade desta função é dada por T(V,E) = V + T_haCaminhoAux(V,E) = V + V + E = Theta(V + E)
+/* A Complexidade desta função é dada por T(V,E) = V + T_haCaminhoAux(V,E) = V + V + E = O(V + E)
    Podemos considerar esta função linear, pois percorremos toda a estrutura apenas uma vez.
 */
