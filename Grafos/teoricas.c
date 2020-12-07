@@ -141,7 +141,7 @@ int haCaminhoAux (GrafoL g, int o, int d, int vis[])
     }
     return 0;
 }
-// A Complexidade desta função é dada por T(V,E) = V + E
+// A Complexidade desta função é dada por T(V,E) = O(V + E)
 
 int haCaminho (GrafoL g, int o, int d)
 {
