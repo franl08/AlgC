@@ -96,11 +96,18 @@ binária de procura, T2 passa para a sub-árvore direita de A.
 
 
 
-// Struct para a AVL
+// Definições auxiliares para algoritmos de AVL em C
+
+typedef int TreeEntry;
+typedef enum balancefactor {
+  LH;            // sub-árvore da esquerda tem maior altura
+  RH;            // sub-árvore da direita tem maior altura
+  EH             // alturas iguais
+} BalanceFactor;
 
 struct treenode{
-    char bf;     // Balance Factor
-    int entry;  // Tree Entry
+    BalanceFactor bf;
+    TreeEntry entry; 
     struct treeNode *left;
     struct treeNode *right;
 };
@@ -109,7 +116,7 @@ typedef struct treenode *Tree;
 
 // Função que faz a rotação à esquerda necessária em 3.a
 
-// requires (t != NULL) && (t->right != NULL)
+// requires (t != NULL) && (t -> right != NULL)
 Tree rotateLeft (Tree t){
     Tree aux = t -> right;
     t -> right = aux -> left;
@@ -117,4 +124,82 @@ Tree rotateLeft (Tree t){
     t = aux;
     return t;
 }
+// Fazer rotateRight
 
+
+
+
+
+// Função que balanceia uma árvore que deixou de respeitar o invariante por uma inserção de um elemento à direita
+
+// requires (t != NULL) && (t -> right != NULL)
+Tree balanceRight (Tree t){
+  if (t -> right -> bf == RH) {      // rotação simples, ou seja, o caso 3.a
+    t = rotateLeft (t);
+    t -> bf = EH;
+    t -> left -> bf = EH;
+  }
+  else {                             // rotação dupla, ou seja, o caso 3.b
+    t -> right = rotateRight (t -> right);
+    t = rotateLeft(t);
+    switch (t -> bf){
+      case EH:
+          t -> left -> bf = EH;
+          t -> right -> bf = EH;
+          break;
+      case LH:
+          t -> left -> bf = EH;
+          t -> right -> bf = RH;
+          break;
+      case RH:
+          t -> left -> bf = LH;
+          t -> right -> bf = EH;
+    }
+    t -> bf = EH;
+  }
+  return t;
+}
+
+// Fazer balanceLeft
+
+
+
+
+
+
+// Função que insere um elemento numa árvore AVL
+
+Tree insertTree (Tree t, TreeEntry e, int *cresceu){
+  if (t == NULL){
+    t = (Tree)malloc(sizeof(struct treenode));
+    t -> entry = e;
+    t -> right = t -> left = NULL;
+    t -> bf = EH;
+    *cresceu = 1;
+  }
+  else if (e > t -> entry){
+    t -> right = insertTree(t -> right, e, cresceu);
+    if (*cresceu){
+      switch (t -> bf){
+        case LH:
+            t -> bf = EH;
+            *cresceu = 0;
+            break;
+        case EH:
+            t -> bf = RH;
+            *cresceu = 1;
+            break;
+        case RH:
+            t = balanceRight(t);
+            *cresceu = 0;
+      }
+    }
+  }
+  else {
+      t -> left = insertTree(t -> left, e, cresceu);
+      if (*cresceu){
+          // falta completar a parte da inserção de um elemento à esquerda
+      }
+  }
+  return t;
+}
