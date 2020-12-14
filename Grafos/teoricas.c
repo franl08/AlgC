@@ -206,30 +206,129 @@ Para estes algoritmos devemos:
 #define Cinzento 1
 #define Preto 2
 
-int travessiaBreadthFirst (GrafoL g, int o)
+int travessiaBreadthFirst (GrafoL g, int o, int alc[], int pais[])
 {
-    int cor[v];
-    int orla[v];
-    int i, v, r;
-    int inicio0, fim0;                // estas duas variáveis são as suficientes para definir uma Queue Orla
+    // retorna o nº de vértices alcançáveis a partir de o
+    // preenche o array alc com 1 se o vértice for alcançável de o
+    // preenche o array pais com a árvore produzida
+
+    int cor[V];
+    int orla[V];
+    int tamOrla, r, v;
+    int inicio0, fim0;                // estas duas variáveis com o array orla são suficientes para definir uma Queue Orla
     ListaAdj x;
-    for (i = 0; i < v; i++) cor[i] = Branco;
+    r = 0;
+    for (int i = 0; i < V; i++){
+        alc[i] = 0;
+        pais[i] = -2;
+    }
+    for (int i = 0; i < V; i++) cor[i] = Branco;
+    tamOrla = 0;
     inicio0 = fim0 = 0;            // queue vazia
     cor[o] = Cinzento;
     orla[fim0++] = o;            // enqueue (orla, o)
     tamOrla = 1;
+    pais[o] = -1;
     while (fim0 != inicio0){   // tamanho da orla > 0
+     // escolha do vértice v da orla (cinzento)
         v = orla[inicio0++];  // dequeue (orla)
         cor[v] = Preto;
+        tamOrla--;
         r++;
+        alc[v] = 1;
         for (x = g[v]; x != NULL; x = x->prox){
             // existe uma aresta de v e destino x->destino
             if (cor[x->destino] == Branco){
                 orla[fim0++] = x->destino;   // enqueue (orla, x->destino)
                 cor[x->destino] = Cinzento;
+                tamOrla++;
+                pais[x -> destino] = v;
             }
         }
     
     }
     return r;
 }
+
+/* Iniciaremos agora o estudo do caminho mais curto em grafos (Shortest Path). Para isso devemos distinguir as diversas maneiras de considerar um caminho mais curto tendo em conta os grafos
+definidos anteriormente.
+        1. Quanto ao número de arestas;
+        2. Quando ao peso.
+
+   Para calcularmos o caminho mais curto quanto ao número de arestas podemos utilizar o algoritmo "travessiaBreadthFirst" que construímos acima.
+   Para calcularmos o caminho mais curto quanto ao peso das arestas iremos estudar o algoritmo de Dijkstra.
+*/
+
+/* Algoritmo de Dijkstra
+        -> Toma decisões localmente, logo, não podem haver caminhos que retirem peso ao caminho.
+        -> Através disso, concluímos que não funciona quando existem arestas com peso negativo.
+        -> Podemos adaptar o algoritmo "travessiaBreadthFirst" para o obter (a grande diferença é que a orla deixa de ser uma queue)
+*/
+
+// Função que calcula o caminho mais curto com base no algoritmo de Dijkstra
+
+int DijkstraSP (GrafoL g, int o, int alc[], int pais[], int W[]){
+    int cor[V];
+    // podemos definir a orla de diversas maneiras
+    int tamOrla, r, v;
+    ListaAdj x;
+
+    r = 0;
+    for (int i = 0; i < V; i++){
+        alc[i] = 0;
+        pais[i] = -2;
+        cor[i] = Branco;
+    }
+    for (int i = 0; i < V; i++) cor[i] = Branco;
+    tamOrla = 0;
+    cor[o] = Cinzento;
+    W[o] = 0;
+    // adicionar o à orla
+    tamOrla = 1;
+    pais[o] = -1;
+    while (tamOrla > 0){   // tamanho da orla > 0
+     // escolha do vértice v da orla (cinzento)
+     // depende da definição da orla
+        cor[v] = Preto;
+        tamOrla--;
+        r++;
+        alc[v] = 1;
+        for (x = g[v]; x != NULL; x = x->prox){
+            // existe uma aresta de v e destino x -> destino ccom peso x -> peso
+            if (cor[x->destino] == Branco){
+                // x -> destino é não visitado
+                // adicionar x -> destino à orla
+                cor[x->destino] = Cinzento;
+                tamOrla++;
+                pais[x -> destino] = v;
+                W[x -> destino] = W[v] + x -> peso;
+            }
+            else if (cor [x -> destino] == Cinzento && W[v] + x -> peso < W[x -> destino]){
+                W[x -> destino] = W[v] + x -> peso;
+                pais [x -> destino] = v;
+            }
+        }
+    
+    }
+    return r;
+}
+
+/* A complexidade desta função é dada por  T_DijsktraSP (V,E) = V + T_Adicionar + V * T_Selecionar + V * T_Adicionar + (E - V) * T_Atualizar
+      Logo, podemos concluir que irá depender da forma que vamos definir a orla.
+      Alternativas para definir a Orla:
+    1. Orla é um array de vértices ordenados por W
+       T_Adicionar = O(V);
+       T_Selecionar = O(1);
+       T_Atualizar = O(V);
+       T_DijsktraSP = V + V + V * 1 + V * V + E * V - (V^2) = O(V + E * V) 
+    2. Orla é um array desordenado
+       T_Adicionar = O(1);
+       T_Selecionar = O(V);
+       T_Atualizar = O(1);
+       T_DijsktraSP = V + 1 + V * V + V * 1 + E * 1 - V * 1 = V + (V^2) + V * E = O((V^2) + V * E)
+    3. Orla é uma min-heap ordenada por W (melhor solução estudada)
+       T_Adicionar = O(log V)
+       T_Selecionar = O(log V)
+       T_Atualizar = O(log V)
+       T_DijsktraSP = V + (log V) + V * (log V) + V * (log V) + E * (log V)  - V * (log V) = O(E * log(V) + V * log(V))
+*/
