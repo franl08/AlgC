@@ -325,7 +325,7 @@ int DijkstraSP (GrafoL g, int o, int alc[], int pais[], int W[]){
        T_Adicionar = O(1);
        T_Selecionar = O(V);
        T_Atualizar = O(1);
-       T_DijsktraSP = V + 1 + V * V + V * 1 + E * 1 - V * 1 = V + (V^2) + V * E = O((V^2) + V * E)
+       T_DijsktraSP = V + 1 + V * V + V * 1 + E * 1 - V * 1 = V + (V^2) + V * E = O((V^2) + E)
     3. Orla é uma min-heap ordenada por W (melhor solução estudada)
        T_Adicionar = O(log V)
        T_Selecionar = O(log V)
