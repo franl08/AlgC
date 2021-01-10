@@ -332,3 +332,37 @@ int DijkstraSP (GrafoL g, int o, int alc[], int pais[], int W[]){
        T_Atualizar = O(log V)
        T_DijsktraSP = V + (log V) + V * (log V) + V * (log V) + E * (log V)  - V * (log V) = O(E * log(V) + V * log(V))
 */
+
+/* Definiremos agora, um algoritmo que, em alguns casos, pode vir a ser mais eficiente que o Dijkstra e, além disso, tem a mais valia
+de funcionar com arestas de peso negativo. 
+*/
+
+/* Algoritmo de Floyd-Warshall:
+        Dado um grafo g, devemos calcular o grafo g+ em que existe uma aresta de a para b com peso p se e só se, em g, o caminho mais curto de a para b tem peso p.
+*/
+
+/* Para isto, devemos ver o que é um caminho, ou seja, uma sequência de arestas encadeadas. Podemos ter os seguintes caminhos:
+        1. Caminhos Simples (caminhos com 1 só aresta);
+        2. Caminhos com Vértices Intermédios.
+*/
+
+// Definiremos a ideia base de implementação deste algoritmo:
+ 
+     g+ = g; // Para ser possível cumprir o invariante de ciclo não podemos ter vértices intermédios inicialmente, para isso, inicializamos g+ como g
+    for (i = 0; i < V; i++)
+        // Invariante de Ciclo:
+        /* existe uma aresta de a para b em g+ se e só se
+           o caminho mais curto de a até b
+           usando um número de vértices < i como intermédios
+           tem custo p
+        */
+        /* O nosso objetivo de agora é:
+            Incluir um caminho de a para b no caso de termos um caminho de a para i e de i para b.
+            Caso já exista um caminho de a para b mais curto do que desejamos acrescentar devemos deixar esse mesmo caminho.
+        */
+        // Fazemos algo do género:
+        for (a in antecessores(i))
+            for (b in sucessores(i))
+                acrescentar info da aresta (a,b);
+    
+// A complexidade deste Algoritmo é dado por  T_warshall (V, E) = (V^2) + V * (V * V) = (V^2) + (V^3) = Theta (V^3)
