@@ -124,7 +124,7 @@ Tree rotateLeft (Tree t){
     t = aux;
     return t;
 }
-// Fazer rotateRight
+// Falta rotateRight
 
 
 
@@ -160,7 +160,7 @@ Tree balanceRight (Tree t){
   return t;
 }
 
-// Fazer balanceLeft
+// Falta balanceLeft
 
 
 
