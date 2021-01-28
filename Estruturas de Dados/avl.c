@@ -124,10 +124,17 @@ Tree rotateLeft (Tree t){
     t = aux;
     return t;
 }
-// Falta rotateRight
 
+// Função que faz a rotação à direita
 
-
+// requires (t != NULL) && (t -> left != NULL)
+Tree rotateRight (Tree t){
+  Tree aux = t -> left;
+  t -> left = aux -> right;
+  aux -> right = t;
+  t = aux;
+  return t;
+}
 
 
 // Função que balanceia uma árvore que deixou de respeitar o invariante por uma inserção de um elemento à direita
