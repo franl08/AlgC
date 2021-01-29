@@ -141,42 +141,72 @@ Tree rotateRight (Tree t){
 
 // requires (t != NULL) && (t -> right != NULL)
 Tree balanceRight (Tree t){
-  if (t -> right -> bf == RH) {      // rotação simples, ou seja, o caso 3.a
-    t = rotateLeft (t);
-    t -> bf = EH;
-    t -> left -> bf = EH;
-  }
-  else {                             // rotação dupla, ou seja, o caso 3.b
-    t -> right = rotateRight (t -> right);
+  Tree aux1, aux2;
+  aux1 = t -> right;
+  if (aux1 -> bf = RH){
+    t -> bf = aux1 -> bf = EH;
     t = rotateLeft(t);
-    switch (t -> bf){
+  }
+  else{
+    aux2 = aux1 -> left;
+    switch (aux2 -> bf){
       case EH:
-          t -> left -> bf = EH;
-          t -> right -> bf = EH;
-          break;
+        t -> bf = aux1 -> bf = EH;
+        break;
       case LH:
-          t -> left -> bf = EH;
-          t -> right -> bf = RH;
-          break;
+        t -> bf = EH;
+        aux1 -> bf = RH;
+        break;
       case RH:
-          t -> left -> bf = LH;
-          t -> right -> bf = EH;
+        t -> bf = LH;
+        aux1 -> bf = BAL;
+        break;
     }
-    t -> bf = EH;
+    aux2 -> bf = EH;
+    t -> right = rotateRight (aux1);
+    t = rotateLeft (t);
+  }
+  return a;
+}
+
+// Função que balanceia uma árvore que deixou de respeitar o invariante por uma inserção de um elemento à esquerda
+
+// requires (t != NULL) && (t -> right != NULL)
+Tree balanceLeft (Tree t){
+  Tree aux1, aux2;
+  aux1 = t -> left;
+  if (aux1 -> bf == LH){
+    t -> bf = aux1 -> bf = EH;
+    t = rotateRight (t);
+  }
+  else{
+    aux2 = aux1 -> right;
+    switch (aux2 -> bf){
+      case EH:
+        t -> bf = aux1 -> bf = EH;
+        break;
+      case LH:
+        t -> bf = RH;
+        aux1 -> bf = EH;
+        break;
+      case RH:
+        t -> bf = BAL;
+        aux1 -> bf = LEFT;
+        break;
+    }
+    aux2 -> bal = BAL;
+    t -> left = rotateLeft(aux1);
+    t = rotateRight (t);
   }
   return t;
 }
 
-// Falta balanceLeft
 
 
 
+// Função que atualiza uma AVL
 
-
-
-// Função que insere um elemento numa árvore AVL
-
-Tree insertTree (Tree t, TreeEntry e, int *cresceu){
+Tree updateTree (Tree t, TreeEntry e, int *cresceu){
   if (t == NULL){
     t = (Tree)malloc(sizeof(struct treenode));
     t -> entry = e;
