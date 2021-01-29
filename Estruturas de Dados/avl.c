@@ -98,21 +98,15 @@ binária de procura, T2 passa para a sub-árvore direita de A.
 
 // Definições auxiliares para algoritmos de AVL em C
 
-typedef int TreeEntry;
-typedef enum balancefactor {
-  LH;            // sub-árvore da esquerda tem maior altura
-  RH;            // sub-árvore da direita tem maior altura
-  EH             // alturas iguais
-} BalanceFactor;
+#define LH 1; // a sub-árvore da esquerda é mais pesada
+#define EH 0; // árvore balanceada
+#define RH -1; // a sub-árvore da direita é mais pesada
 
-struct treenode{
-    BalanceFactor bf;
-    TreeEntry entry; 
-    struct treeNode *left;
-    struct treeNode *right;
-};
-
-typedef struct treenode *Tree;
+typedef struct tree{
+    int bf;
+    int key, info;
+    struct tree *left, *right
+} *Tree;
 
 // Função que faz a rotação à esquerda necessária em 3.a
 
@@ -204,39 +198,83 @@ Tree balanceLeft (Tree t){
 
 
 
-// Função que atualiza uma AVL
+// Função que atualiza uma AVL recursivamente
 
-Tree updateTree (Tree t, TreeEntry e, int *cresceu){
-  if (t == NULL){
-    t = (Tree)malloc(sizeof(struct treenode));
-    t -> entry = e;
-    t -> right = t -> left = NULL;
-    t -> bf = EH;
-    *cresceu = 1;
+int updateAVL (Tree *a, int k, int i){
+  int g, u;
+  *a = updateAVLRec (*a, k, i, &g, &u);
+  return u;
+}
+
+Tree updateAVLRec (Tree a, int k, int i, int *g, int *u){
+  if (a == NULL){
+    a = malloc (sizeof (struct tree));
+    a -> key = k;
+    a -> info = i;
+    a -> bal = EH;
+    a -> left = a -> right = NULL;
+    *g = 1; 
+    *u = 0;
   }
-  else if (e > t -> entry){
-    t -> right = insertTree(t -> right, e, cresceu);
-    if (*cresceu){
-      switch (t -> bf){
+  else if (a -> key == k){
+    a -> info = i;
+    *g = 0;
+    *u = 1;
+  }
+  else if (a -> key > k){
+    a -> left = updateAVLRec(a -> left, k, i, g, u);
+    if (*g == 1)
+      switch (a -> bal){
         case LH:
-            t -> bf = EH;
-            *cresceu = 0;
-            break;
+          a = balanceLeft(a);
+          *g = 0;
+          break;
         case EH:
-            t -> bf = RH;
-            *cresceu = 1;
-            break;
+          a -> bal = LH;
+          break;
         case RH:
-            t = balanceRight(t);
-            *cresceu = 0;
+          a -> bal = EH;
+          *g = 0;
+          break;
       }
-    }
   }
   else {
-      t -> left = insertTree(t -> left, e, cresceu);
-      if (*cresceu){
-          // falta completar a parte da inserção de um elemento à esquerda
+    a -> right = updateAVLRec(a -> right, k, i, g, u);
+    if (*g == 1)
+      switch (a -> bal){
+        case RH:
+          a = balanceRight(a);
+          *g = 0;
+          break;
+        case EH:
+          a -> bal = RH; 
+          break;
+        case LH:
+          a -> bal = EH;
+          *g = 0;
+          break;
       }
   }
-  return t;
+  return a;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
