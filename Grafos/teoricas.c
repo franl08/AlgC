@@ -20,6 +20,7 @@
 // Representação de grafos:
 
 #define V 100 // V é o número de vértices
+#define NE 0 // aresta nula
 
 // 1. Grafo em forma de matrizes de adjacência:
 
@@ -365,4 +366,26 @@ de funcionar com arestas de peso negativo.
             for (b in sucessores(i))
                 acrescentar info da aresta (a,b);
     
+// Uma opção de definir o algoritmo será:
+void floydWarshall (GrafoL g, GrafoM gp){
+    ListaAdj it;
+    int cost, u, v, x;
+
+    // inicializar gp
+    for (u = 0; u < V; u++){
+        for (v = 0; v < V; v++)
+            gp[u][v] = NE;
+        for (it = gp[u]; it != NULL; it = it -> prox)
+            gp[v][it -> destino] = it -> peso;
+    }
+    // adição de arestas
+    for (x = 0; x < V; x++)
+        for (u = 0; u < V; u++)
+            for (v = 0; v < V; v++)
+                if(gp[u][x] != NE && gp[x][v] != NE){
+                    cost = gp[u][x] + gp[x][v];
+                    if(gp[u][v] == NE || gp[u][v] > cost)
+                        gp[u][v] = cost;
+                }
+}
 // A complexidade deste Algoritmo é dado por  T_warshall (V, E) = (V^2) + V * (V * V) = (V^2) + (V^3) = Theta (V^3)
