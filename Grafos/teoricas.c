@@ -375,7 +375,7 @@ void floydWarshall (GrafoL g, GrafoM gp){
     for (u = 0; u < V; u++){
         for (v = 0; v < V; v++)
             gp[u][v] = NE;
-        for (it = gp[u]; it != NULL; it = it -> prox)
+        for (it = g[u]; it != NULL; it = it -> prox)
             gp[v][it -> destino] = it -> peso;
     }
     // adição de arestas
