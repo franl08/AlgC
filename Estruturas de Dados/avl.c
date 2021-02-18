@@ -258,23 +258,3 @@ Tree updateAVLRec (Tree a, int k, int i, int *g, int *u){
   return a;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
